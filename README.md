@@ -12,11 +12,7 @@ Read the English version: [README_EN.md](README_EN.md)
 
 ## 📸 效果预览
 操作界面
-<img width="2330" height="1255" alt="PixPin_2025-10-31_17-14-27" src="https://github.com/user-attachments/assets/5319ad5c-c507-42e0-b67a-e9dfb2d7ecfa" />
-技术架构图
-<img width="1920" height="1134" alt="Untitled-2025-11-03-1105" src="https://github.com/user-attachments/assets/d2e01c4e-d300-4c20-bd98-d056e4f02102" />
-信息图
-<img width="2183" height="828" alt="Untitled-2025-11-03-1054" src="https://github.com/user-attachments/assets/0e46e8da-fe64-40a9-911b-f6c0e5589bae" />
+<img width="2330" height="1255" alt="PixPin_2025-10-31_17-14-27" src="./snapshot.png" />
 
 
 

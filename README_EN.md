@@ -10,11 +10,7 @@ fork from https://github.com/liujuntao123/smart-excalidraw-next
 
 ## 📸 Preview
 Operation Interface
-<img width="2330" height="1255" alt="Smart Excalidraw Preview" src="https://github.com/user-attachments/assets/5319ad5c-c507-42e0-b67a-e9dfb2d7ecfa" />
-Technical Architecture Diagram
-<img width="1920" height="1134" alt="Untitled-2025-11-03-1105" src="https://github.com/user-attachments/assets/d2e01c4e-d300-4c20-bd98-d056e4f02102" />
-Infographic
-<img width="2183" height="828" alt="Untitled-2025-11-03-1054" src="https://github.com/user-attachments/assets/0e46e8da-fe64-40a9-911b-f6c0e5589bae" />
+<img width="2330" height="1255" alt="Smart Excalidraw Preview" src="./snapshot.png" />
 
 ## ✨ Core Features
 
