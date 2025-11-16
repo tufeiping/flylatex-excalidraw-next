@@ -1,9 +1,12 @@
-# Smart Excalidraw
+# 𝔽𝕝𝕪𝕃𝕒𝕋𝕖𝕏 Excalidraw
 
 > **Draw Professional Charts with Natural Language**
 
 ## 🌐 Online Website
-Visit our online website to use directly: https://smart-excalidraw.aizhi.site/
+Visit our online website to use directly: https://www.flylatex.cn/whiteboard/
+
+
+fork from https://github.com/liujuntao123/smart-excalidraw-next
 
 ## 📸 Preview
 Operation Interface
@@ -71,8 +74,8 @@ If you want to run the project locally:
 
 ```bash
 # Clone the project
-git clone https://github.com/liujuntao123/smart-excalidraw-next.git
-cd smart-excalidraw-next
+git clone https://github.com/tufeiping/flylatex-excalidraw-next.git 
+cd flylatex-excalidraw-next
 
 # Install dependencies
 pnpm install
@@ -81,7 +84,7 @@ pnpm install
 pnpm dev
 ```
 
-Visit http://localhost:3000 to start using.
+Visit http://localhost:3000/whiteboard to start using.
 
 ### Configure Server-Side LLM (Optional)
 
@@ -164,8 +167,8 @@ This project supports multiple languages:
 - 🇺🇸 English
 
 Language is automatically detected based on your browser settings, or you can access different language versions:
-- Chinese: `http://localhost:3000/zh`
-- English: `http://localhost:3000/en`
+- Chinese: `http://localhost:3000/whiteboard/zh`
+- English: `http://localhost:3000/whiteboard/en`
 
 ## 📄 License
 

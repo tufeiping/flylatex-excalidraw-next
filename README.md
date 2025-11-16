@@ -1,18 +1,16 @@
-# Smart Excalidraw
+# 𝔽𝕝𝕪𝕃𝕒𝕋𝕖𝕏 Excalidraw
 
 > **用自然语言，绘制专业图表**
 
-## 在线网站
-进入在线网站直接使用：https://smart-excalidraw.aizhi.site/
+## 🌐 在线网站
+进入在线网站直接使用：https://www.flylatex.cn/whiteboard/
 
-🚀🚀🚀 限时福利
-
-添加底部作者微信进群可领取免费claude-4.5-sonnet key
+fork 自 https://github.com/liujuntao123/smart-excalidraw-next
 
 ## English Version
 Read the English version: [README_EN.md](README_EN.md)
 
-## 效果预览
+## 📸 效果预览
 操作界面
 <img width="2330" height="1255" alt="PixPin_2025-10-31_17-14-27" src="https://github.com/user-attachments/assets/5319ad5c-c507-42e0-b67a-e9dfb2d7ecfa" />
 技术架构图
@@ -79,8 +77,8 @@ AI 会自动生成图表，你可以在画布上直接编辑和调整。
 
 ```bash
 # 克隆项目
-git clone <your-repo-url>
-cd smart-excalidraw-next
+git clone https://github.com/tufeiping/flylatex-excalidraw-next.git 
+cd flylatex-excalidraw-next
 
 # 安装依赖
 pnpm install
@@ -89,7 +87,7 @@ pnpm install
 pnpm dev
 ```
 
-访问 http://localhost:3000 即可使用。
+访问 http://localhost:3000/whiteboard 即可使用。
 
 ### 配置服务器端 LLM（可选）
 
@@ -146,39 +144,27 @@ A: 访问密码功能允许服务器管理员配置统一的 LLM，用户只需�
 **Q: 访问密码和本地配置的优先级是什么？**
 A: 如果启用了访问密码，系统将优先使用服务器端的 LLM 配置。只有在未启用访问密码时，才会使用本地配置的 API Key。
 
+**Q: 支持多语言吗？**
+A: 支持！界面现在同时支持中文和英文，会根据浏览器语言设置自动选择。
+
 ## 🛠️ 技术栈
 
-Next.js 16 · React 19 · Excalidraw · Tailwind CSS 4 · Monaco Editor
+Next.js 16 · React 19 · Excalidraw · Tailwind CSS 4 · Monaco Editor · next-intl
+
+## 🌐 多语言支持
+
+本项目支持多种语言：
+- 🇨🇳 中文（简体） - 默认语言
+- 🇺🇸 英文
+
+语言会根据浏览器设置自动检测，你也可以访问不同语言版本：
+- 中文：`http://localhost:3000/whiteboard/zh`
+- 英文：`http://localhost:3000/whiteboard/en`
 
 ## 📄 许可证
 
 MIT License
 
-## 联系作者
-微信号： liujuntaoljt
-
-<img width="200"  alt="微信图片_20251103110224_44_85" src="https://github.com/user-attachments/assets/6d8c4da2-af27-4213-b929-0d47fa51e9b5" />
-
-## 💖 赞助
-
-感谢以下赞助者对本项目的支持：
-
-<!-- 赞助者名单 -->
-- API中转站：[AI 网关｜插件世界](https://ai-router.plugins-world.cn)
-
-如果这个项目对你有帮助，欢迎通过以下方式支持：
-- ⭐ 给项目点个 Star
-- 💬 分享给更多需要的人
-- 💰 成为赞助者（联系作者微信）
-
-## 友情链接
-
-- https://github.com/ZhangQL2824/auto-drawio.git
-
 ---
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=liujuntao123/smart-excalidraw-next&type=date&legend=top-left)](https://www.star-history.com/#liujuntao123/smart-excalidraw-next&type=date&legend=top-left)
 
 **用自然语言，绘制专业图表** - 让可视化创作回归简单

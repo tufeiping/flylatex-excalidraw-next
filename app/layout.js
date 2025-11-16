@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Smart Excalidraw",
+  title: "𝔽𝕝𝕪𝕃𝕒𝕋𝕖𝕏 Excalidraw",
   description: "AI 驱动的图表生成",
 };
 

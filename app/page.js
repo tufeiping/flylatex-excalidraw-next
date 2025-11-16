@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import Chat from '@/components/Chat';
 import CodeEditor from '@/components/CodeEditor';
 import ConfigManager from '@/components/ConfigManager';
-import ContactModal from '@/components/ContactModal';
 import HistoryModal from '@/components/HistoryModal';
 import AccessPasswordModal from '@/components/AccessPasswordModal';
 import Notification from '@/components/Notification';
@@ -22,7 +21,6 @@ const ExcalidrawCanvas = dynamic(() => import('@/components/ExcalidrawCanvas'), 
 export default function Home() {
   const [config, setConfig] = useState(null);
   const [isConfigManagerOpen, setIsConfigManagerOpen] = useState(false);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isAccessPasswordModalOpen, setIsAccessPasswordModalOpen] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
@@ -30,7 +28,14 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isApplyingCode, setIsApplyingCode] = useState(false);
   const [isOptimizingCode, setIsOptimizingCode] = useState(false);
-  const [leftPanelWidth, setLeftPanelWidth] = useState(25); // Percentage of viewport width
+  const [leftPanelWidth, setLeftPanelWidth] = useState(() => {
+    // 初始化时计算最小宽度对应的百分比
+    // 400px 最小宽度
+    const MIN_WIDTH_PX = 400;
+    const minWidthPercent = (MIN_WIDTH_PX / (typeof window !== 'undefined' ? window.innerWidth : 1280)) * 100;
+    return minWidthPercent;
+  });
+  const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false);
   const [isResizingHorizontal, setIsResizingHorizontal] = useState(false);
   const [apiError, setApiError] = useState(null);
   const [jsonError, setJsonError] = useState(null);
@@ -49,6 +54,31 @@ export default function Home() {
     const savedConfig = getConfig();
     if (savedConfig) {
       setConfig(savedConfig);
+    }
+
+    // Load left panel collapsed state
+    const savedCollapsedState = localStorage.getItem('smart-excalidraw-left-panel-collapsed');
+    if (savedCollapsedState === 'true') {
+      setIsLeftPanelCollapsed(true);
+    }
+
+    // Load left panel width
+    const savedWidth = localStorage.getItem('smart-excalidraw-left-panel-width');
+    if (savedWidth) {
+      const widthPercent = parseFloat(savedWidth);
+      const MIN_WIDTH_PX = 400;
+      // 检查百分比对应的像素是否满足最小宽度
+      const widthPixels = (widthPercent / 100) * window.innerWidth;
+      if (widthPixels >= MIN_WIDTH_PX) {
+        setLeftPanelWidth(widthPercent);
+      } else {
+        // 如果小于最小宽度，强制设置为最小宽度
+        setLeftPanelWidth((MIN_WIDTH_PX / window.innerWidth) * 100);
+      }
+    } else {
+      // localStorage 为空时，设置为最小宽度
+      const MIN_WIDTH_PX = 400;
+      setLeftPanelWidth((MIN_WIDTH_PX / window.innerWidth) * 100);
     }
 
     // Load password access state
@@ -379,6 +409,13 @@ export default function Home() {
     setGeneratedCode('');
   };
 
+  // Handle toggle left panel collapse/expand
+  const handleToggleLeftPanel = () => {
+    const newCollapsed = !isLeftPanelCollapsed;
+    setIsLeftPanelCollapsed(newCollapsed);
+    localStorage.setItem('smart-excalidraw-left-panel-collapsed', newCollapsed ? 'true' : 'false');
+  };
+
   // Handle config selection from manager
   const handleConfigSelect = (selectedConfig) => {
     if (selectedConfig) {
@@ -409,10 +446,17 @@ export default function Home() {
     const handleMouseMove = (e) => {
       if (!isResizingHorizontal) return;
       
-      const percentage = (e.clientX / window.innerWidth) * 100;
+      // 计算新的面板宽度（像素）
+      let newWidth = e.clientX;
       
-      // 可调节的范围
-      setLeftPanelWidth(Math.min(Math.max(percentage, 20), 80));
+      // 最小宽度 400px，最大宽度 80% 的视口宽度
+      const MIN_WIDTH_PX = 400;
+      const maxWidth = window.innerWidth * 0.8;
+      newWidth = Math.min(Math.max(newWidth, MIN_WIDTH_PX), maxWidth);
+      
+      // 转换为百分比保存
+      const percentage = (newWidth / window.innerWidth) * 100;
+      setLeftPanelWidth(percentage);
     };
 
     const handleMouseUp = () => {
@@ -430,12 +474,19 @@ export default function Home() {
     };
   }, [isResizingHorizontal]);
 
+  // Save left panel width to localStorage when it changes
+  useEffect(() => {
+    if (!isLeftPanelCollapsed && leftPanelWidth > 0) {
+      localStorage.setItem('smart-excalidraw-left-panel-width', leftPanelWidth.toString());
+    }
+  }, [leftPanelWidth, isLeftPanelCollapsed]);
+
   return (
     <div className="flex flex-col h-screen bg-gray-50">
       {/* Header */}
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
         <div>
-          <h1 className="text-lg font-semibold text-gray-900">Smart Excalidraw</h1>
+          <h1 className="text-lg font-semibold text-gray-900">𝔽𝕝𝕪𝕃𝕒𝕋𝕖𝕏 Excalidraw</h1>
           <p className="text-xs text-gray-500">AI 驱动的图表生成</p>
         </div>
         <div className="flex items-center space-x-3">
@@ -473,7 +524,7 @@ export default function Home() {
       {/* Main Content - Two Column Layout */}
       <div className="flex flex-1 overflow-hidden pb-1">
         {/* Left Panel - Chat and Code Editor */}
-        <div id="left-panel" style={{ width: `${leftPanelWidth}%` }} className="flex flex-col border-r border-gray-200 bg-white">
+        <div id="left-panel" style={{ width: isLeftPanelCollapsed ? '0%' : `${leftPanelWidth}%`, overflow: 'hidden' }} className="flex flex-col border-r border-gray-200 bg-white transition-all duration-300">
           {/* API Error Banner */}
           {apiError && (
             <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-start justify-between">
@@ -525,13 +576,30 @@ export default function Home() {
         </div>
 
         {/* Horizontal Resizer */}
-        <div
+        {/* Resizer with embedded toggle button */}
+        <div 
           onMouseDown={handleHorizontalMouseDown}
-          className="w-1 bg-gray-200 hover:bg-gray-400 cursor-col-resize transition-colors duration-200 flex-shrink-0"
-        />
+          className="w-1 bg-gray-200 hover:bg-gray-400 cursor-col-resize transition-colors duration-200 flex-shrink-0 h-full flex items-center justify-center relative group"
+        >
+          <button
+            onClick={handleToggleLeftPanel}
+            className="text-gray-500 hover:text-gray-700 transition-colors duration-200 px-2 py-3 leading-none"
+            title={isLeftPanelCollapsed ? '展开左面板' : '收起左面板'}
+          >
+            {isLeftPanelCollapsed ? (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            )}
+          </button>
+        </div>
 
         {/* Right Panel - Excalidraw Canvas */}
-        <div style={{ width: `${100 - leftPanelWidth}%` }} className="bg-gray-50">
+        <div style={{ width: isLeftPanelCollapsed ? '100%' : `${100 - leftPanelWidth}%` }} className="bg-gray-50 transition-all duration-300">
           <ExcalidrawCanvas elements={elements} />
         </div>
       </div>
@@ -546,12 +614,12 @@ export default function Home() {
       {/* Footer */}
       <footer className="bg-white border-t border-gray-200 px-6 py-3">
         <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
-          <span>Smart Excalidraw v0.1.0</span>
+          <span>𝔽𝕝𝕪𝕃𝕒𝕋𝕖𝕏 Excalidraw</span>
           <span className="text-gray-400">|</span>
           <span>AI 驱动的智能图表生成工具</span>
           <span className="text-gray-400">|</span>
           <a
-            href="https://github.com/liujuntao123/smart-excalidraw-next"
+            href="hhttps://github.com/tufeiping/flylatex-excalidraw-next"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-1 hover:text-gray-900 transition-colors"
@@ -561,19 +629,6 @@ export default function Home() {
             </svg>
             <span>GitHub</span>
           </a>
-          <span className="text-gray-400">|</span>
-          <button
-            onClick={() => setIsContactModalOpen(true)}
-            className="flex items-center space-x-1 hover:text-gray-900 transition-colors text-blue-600 hover:text-blue-700"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <span>联系作者</span>
-          </button>
-          <button onClick={() => setIsContactModalOpen(true)} >
-          <span className="text-orange-500 font-medium">🎁 进群限时领取免费 claude-4.5-sonnet key</span>
-          </button>
         </div>
       </footer>
 
@@ -589,13 +644,7 @@ export default function Home() {
         isOpen={isAccessPasswordModalOpen}
         onClose={() => setIsAccessPasswordModalOpen(false)}
       />
-
-      {/* Contact Modal */}
-      <ContactModal
-        isOpen={isContactModalOpen}
-        onClose={() => setIsContactModalOpen(false)}
-      />
-
+      
       {/* Notification */}
       <Notification
         isOpen={notification.isOpen}

@@ -257,7 +257,7 @@ export default function ConfigManager({ isOpen, onClose, onConfigSelect }) {
           )}
 
           <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded">
-            <p className="text-sm text-blue-800">提示：如果启用了访问密码，将优先使用服务器端配置，此处配置将被忽略</p>
+            <p className="text-sm text-blue-800">提示：如果启用了访问密码，将优先使用服务器端配置，此处配置将被忽略。您所有的配置只会保存在您浏览器本地缓存中，请放心配置。</p>
           </div>
 
           {/* Actions Bar */}
@@ -486,6 +486,10 @@ function ConfigEditor({ config, isCreating, onSave, onCancel }) {
               <p className="text-sm text-red-800">{error}</p>
             </div>
           )}
+
+          <div className="mb-4 px-4 py-3 bg-blue-50 border border-blue-200 rounded">
+            <p className="text-sm text-blue-800">您所有的配置只会保存在您浏览器本地缓存中，请放心配置。</p>
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
