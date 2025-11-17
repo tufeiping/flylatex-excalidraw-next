@@ -29,11 +29,8 @@ export default function Home() {
   const [isApplyingCode, setIsApplyingCode] = useState(false);
   const [isOptimizingCode, setIsOptimizingCode] = useState(false);
   const [leftPanelWidth, setLeftPanelWidth] = useState(() => {
-    // 初始化时计算最小宽度对应的百分比
-    // 400px 最小宽度
-    const MIN_WIDTH_PX = 400;
-    const minWidthPercent = (MIN_WIDTH_PX / (typeof window !== 'undefined' ? window.innerWidth : 1280)) * 100;
-    return minWidthPercent;
+    // 初始化时使用 400px 作为默认宽度
+    return 400;
   });
   const [isLeftPanelCollapsed, setIsLeftPanelCollapsed] = useState(false);
   const [isResizingHorizontal, setIsResizingHorizontal] = useState(false);
@@ -62,23 +59,20 @@ export default function Home() {
       setIsLeftPanelCollapsed(true);
     }
 
-    // Load left panel width
+    // Load left panel width in pixels
     const savedWidth = localStorage.getItem('smart-excalidraw-left-panel-width');
     if (savedWidth) {
-      const widthPercent = parseFloat(savedWidth);
+      const widthPixels = parseFloat(savedWidth);
       const MIN_WIDTH_PX = 400;
-      // 检查百分比对应的像素是否满足最小宽度
-      const widthPixels = (widthPercent / 100) * window.innerWidth;
-      if (widthPixels >= MIN_WIDTH_PX) {
-        setLeftPanelWidth(widthPercent);
+      const maxWidth = window.innerWidth * 0.8;
+      // 检查像素值是否在有效范围内
+      if (widthPixels >= MIN_WIDTH_PX && widthPixels <= maxWidth) {
+        setLeftPanelWidth(widthPixels);
+      } else if (widthPixels < MIN_WIDTH_PX) {
+        setLeftPanelWidth(MIN_WIDTH_PX);
       } else {
-        // 如果小于最小宽度，强制设置为最小宽度
-        setLeftPanelWidth((MIN_WIDTH_PX / window.innerWidth) * 100);
+        setLeftPanelWidth(maxWidth);
       }
-    } else {
-      // localStorage 为空时，设置为最小宽度
-      const MIN_WIDTH_PX = 400;
-      setLeftPanelWidth((MIN_WIDTH_PX / window.innerWidth) * 100);
     }
 
     // Load password access state
@@ -454,9 +448,10 @@ export default function Home() {
       const maxWidth = window.innerWidth * 0.8;
       newWidth = Math.min(Math.max(newWidth, MIN_WIDTH_PX), maxWidth);
       
-      // 转换为百分比保存
-      const percentage = (newWidth / window.innerWidth) * 100;
-      setLeftPanelWidth(percentage);
+      setLeftPanelWidth(newWidth);
+      
+      // 实时保存像素值到 localStorage
+      localStorage.setItem('smart-excalidraw-left-panel-width', newWidth.toString());
     };
 
     const handleMouseUp = () => {
@@ -474,12 +469,10 @@ export default function Home() {
     };
   }, [isResizingHorizontal]);
 
-  // Save left panel width to localStorage when it changes
+  // Save left panel collapsed state to localStorage when it changes
   useEffect(() => {
-    if (!isLeftPanelCollapsed && leftPanelWidth > 0) {
-      localStorage.setItem('smart-excalidraw-left-panel-width', leftPanelWidth.toString());
-    }
-  }, [leftPanelWidth, isLeftPanelCollapsed]);
+    localStorage.setItem('smart-excalidraw-left-panel-collapsed', isLeftPanelCollapsed ? 'true' : 'false');
+  }, [isLeftPanelCollapsed]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
@@ -524,7 +517,7 @@ export default function Home() {
       {/* Main Content - Two Column Layout */}
       <div className="flex flex-1 overflow-hidden pb-1">
         {/* Left Panel - Chat and Code Editor */}
-        <div id="left-panel" style={{ width: isLeftPanelCollapsed ? '0%' : `${leftPanelWidth}%`, overflow: 'hidden' }} className="flex flex-col border-r border-gray-200 bg-white transition-all duration-300">
+        <div id="left-panel" style={{ width: isLeftPanelCollapsed ? '0px' : `${leftPanelWidth}px`, overflow: 'hidden' }} className="flex flex-col border-r border-gray-200 bg-white transition-all duration-300">
           {/* API Error Banner */}
           {apiError && (
             <div className="bg-red-50 border-b border-red-200 px-4 py-3 flex items-start justify-between">
@@ -575,31 +568,30 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Horizontal Resizer */}
-        {/* Resizer with embedded toggle button */}
+        {/* Horizontal Resizer with Collapse/Expand Button */}
         <div 
           onMouseDown={handleHorizontalMouseDown}
-          className="w-1 bg-gray-200 hover:bg-gray-400 cursor-col-resize transition-colors duration-200 flex-shrink-0 h-full flex items-center justify-center relative group"
+          className="relative w-0.5 h-full flex-shrink-0 bg-gray-300 hover:bg-gray-400 cursor-col-resize transition-colors duration-200 flex items-center justify-center group"
         >
+          {/* Collapse/Expand Button */}
           <button
             onClick={handleToggleLeftPanel}
-            className="text-gray-500 hover:text-gray-700 transition-colors duration-200 px-2 py-3 leading-none"
-            title={isLeftPanelCollapsed ? '展开左面板' : '收起左面板'}
+            className="absolute w-2.5 h-20 flex items-center justify-center transition-all duration-300 hover:shadow-lg border border-white -right-1"
+            style={{
+              background: 'linear-gradient(135deg, #28a745, #20c997 50%, #17a2b8)',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            }}
+            title={isLeftPanelCollapsed ? '展开项目目录' : '收起项目目录'}
           >
-            {isLeftPanelCollapsed ? (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-              </svg>
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-              </svg>
-            )}
+            {isLeftPanelCollapsed ? '☰' : '◀'}
           </button>
         </div>
 
         {/* Right Panel - Excalidraw Canvas */}
-        <div style={{ width: isLeftPanelCollapsed ? '100%' : `${100 - leftPanelWidth}%` }} className="bg-gray-50 transition-all duration-300">
+        <div style={{ width: isLeftPanelCollapsed ? '100%' : `calc(100% - ${leftPanelWidth}px - 0.5px)` }} className="bg-gray-50 transition-all duration-300">
           <ExcalidrawCanvas elements={elements} />
         </div>
       </div>
